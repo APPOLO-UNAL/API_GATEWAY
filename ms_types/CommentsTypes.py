@@ -28,7 +28,18 @@ class ReplyInput:
     userId: str
     itemMusicId: typing.Optional[str]=None
     parentId: typing.Optional[str]=None
+@strawberry.input
+class ReactInput:
+    userIdLike: str
+    unReact: typing.Optional[bool]=None
+
+# Response Types
 @strawberry.type
 class DeleteCommentResponse:
     acknowledged: str
     deletedCount: int
+
+@strawberry.type
+class ReactResponse:
+    likes: typing.Optional[str]
+    dislikes: typing.Optional[str]

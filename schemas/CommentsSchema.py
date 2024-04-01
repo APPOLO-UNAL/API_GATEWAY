@@ -39,13 +39,9 @@ class MutationsComment:
     @strawberry.mutation
     def createComment(self,comment:CommentInput) ->typing.Optional[Comment]:
         try:
-            userId=comment.userId
-            user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={userId}",GET)
-            if("error" in user):
-                raise Exception("The user doesnt exist")
+            if not userExists(comment.userId):  raise Exception("The user doesnt exist")
             createdComment=generalRequest(f"{COMMENTS_URL_BASE}comments/",POST,body=strawberry.asdict(comment))
-            if("message" in createdComment):
-                raise Exception(createdComment["message"])
+            if("message" in createdComment):    raise Exception(createdComment["message"])
             return createdComment
         except Exception as e:
             return e
@@ -62,4 +58,18 @@ class MutationsComment:
     def deleteComment(self,id:str) -> DeleteCommentResponse:
         response=generalRequest(f"{COMMENTS_URL_BASE}comments/{id}",DELETE)
         return response
-    
+    @strawberry.mutation
+    def likeComment(self,id:str,reaction:ReactInput)->Comment:
+        try:
+            if not userExists(id):  raise Exception("The user doesnt exist")
+            return generalRequest(f"{COMMENTS_URL_BASE}comments/{id}/likes",PATCH,body=strawberry.asdict(reaction))
+        except Exception as e:
+            return e
+
+    @strawberry.mutation
+    def dislikeComment(self,id:str,reaction:ReactInput)->Comment:
+        try:
+            if not userExists(id):  raise Exception("The user doesnt exist")
+            return generalRequest(f"{COMMENTS_URL_BASE}comments/{id}/dislikes",PATCH,body=strawberry.asdict(reaction))
+        except Exception as e:
+            return e
