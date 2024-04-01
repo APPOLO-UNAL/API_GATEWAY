@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+from server import USERSOCIAL_URL_BASE
 GET="GET"
 POST="POST"
 PATCH="PATCH"
@@ -30,3 +31,8 @@ def generalRequest(url, method, body=None, full_response=False):
 
 def serialize_to_dict(json_object):
     return json.loads(json_object)
+def userExists(userId)->bool:
+    user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={userId}",GET)
+    if("error" in user):
+        return False
+    return True
