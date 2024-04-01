@@ -1,7 +1,7 @@
 import requests
 import os
 import json
-from server import USERSOCIAL_URL_BASE
+from server import USERSOCIAL_URL_BASE,COMMENTS_URL_BASE
 GET="GET"
 POST="POST"
 PATCH="PATCH"
@@ -35,4 +35,8 @@ def userExists(userId)->bool:
     user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={userId}",GET)
     if("error" in user):
         return False
+    return True
+def commentExists(commentId)->bool:
+    comment=generalRequest(f"{COMMENTS_URL_BASE}comments/{commentId}",GET)
+    if("message" in comment): return False
     return True
