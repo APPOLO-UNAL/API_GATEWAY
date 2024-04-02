@@ -11,3 +11,4 @@ COMMENTS_URL_BASE="http://{0}:{1}/{2}/".format(base_url,comments_port,base_endpo
 USERSOCIAL_URL_BASE="http://{0}:{1}/{2}/".format(base_url,userSocial_port,base_endpoint)
 RATING_URL_BASE="http://{0}:{1}/{2}/".format(base_url,rating_port,base_endpoint)
 
+#types
