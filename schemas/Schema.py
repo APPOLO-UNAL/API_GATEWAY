@@ -10,3 +10,5 @@ class Query(QueryComment,QueryRating,QueryUserSocial,QueryMusic):
 @strawberry.type
 class Mutation(MutationsComment,MutationsRating,MutationsUserSocial):
     pass
+
+#types

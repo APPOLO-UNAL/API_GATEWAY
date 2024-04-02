@@ -1,6 +1,7 @@
 import strawberry
 import typing
 
+#types
 @strawberry.type
 class ExternalUrls:
     spotify: str

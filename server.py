@@ -13,3 +13,4 @@ USERSOCIAL_URL_BASE="http://{0}:{1}/{2}/".format(base_url,userSocial_port,base_e
 RATING_URL_BASE="http://{0}:{1}/{2}/".format(base_url,rating_port,base_endpoint)
 MUSIC_URL_BASE="http://{0}:{1}/{2}/".format(base_url,music_port,base_endpoint)
 
+#types

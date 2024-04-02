@@ -5,7 +5,7 @@ from utilities import *
 from server import MUSIC_URL_BASE
 from ms_types.MusicTypes import *
 
-
+#Types
 @strawberry.type
 class QueryMusic:
         
