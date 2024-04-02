@@ -2,7 +2,9 @@ import strawberry
 import typing
 from utilities import *
 from ms_types.UserSocialTypes import *
+from ms_types.AuthTypes import User, UserInput, UserDeleteInput, UserUpdateInput, FollowInput, FollowResponse
 from server import USERSOCIAL_URL_BASE
+
 @strawberry.type
 class QueryUserSocial:
     @strawberry.field
