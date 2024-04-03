@@ -11,7 +11,7 @@ class QueryComment:
     
     @strawberry.field
     def comment(self,id:str)-> Comment:
-        return generalRequest(f"{COMMENTS_URL_BASE}comments/{id}",GET)
+        return getWithValidation(f"{COMMENTS_URL_BASE}comments/{id}",GET)
     @strawberry.field
     def replies(self,parentId:str)->typing.List[Comment]:
         return generalRequest(f"{COMMENTS_URL_BASE}comments/{parentId}/replies",GET)
@@ -26,7 +26,11 @@ class QueryComment:
     def userComments(self,userId:str)->typing.List[Comment]:
         return generalRequest(f"{COMMENTS_URL_BASE}user/{userId}/comments",GET)
     
-    
+def getWithValidation(url:str,method:str):
+    response=generalRequest(url,method)
+    if "message" in response: raise Exception(response["message"])
+    return response
+
     
     
 @strawberry.type
@@ -60,18 +64,12 @@ class MutationsComment:
         return response
     @strawberry.mutation
     def likeComment(self,idComment:str,reaction:ReactInput)->Comment:
-        try:
-            if not userExists(reaction.userIdLike):  raise Exception("The user doesnt exist")
+            if not userExists(reaction.userIdLike):   raise Exception("The user doesnt exist")
             if not commentExists(idComment): raise Exception("The comment doesnt exist")
             return generalRequest(f"{COMMENTS_URL_BASE}comments/{idComment}/likes",PATCH,body=strawberry.asdict(reaction))
-        except Exception as e:
-            return e
 
     @strawberry.mutation
     def dislikeComment(self,idComment:str,reaction:ReactInput)->Comment:
-        try:
             if not userExists(reaction.userIdLike):  raise Exception("The user doesnt exist")
             if not commentExists(idComment): raise Exception("The comment doesnt exist")
             return generalRequest(f"{COMMENTS_URL_BASE}comments/{idComment}/dislikes",PATCH,body=strawberry.asdict(reaction))
-        except Exception as e:
-            return e
