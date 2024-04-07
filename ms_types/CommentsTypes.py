@@ -7,6 +7,7 @@ class Comment:
     content: str
     parentId: typing.Optional[str]
     itemMusicId:str
+    rate:int
     likes: typing.List[str]
     dislikes: typing.List[str]
     createdAt: str
@@ -15,11 +16,13 @@ class Comment:
 @strawberry.input
 class CommentUpdate:
     content: str
+    rate:int
 
 @strawberry.input
 class CommentInput:
     userId: str
     content: str
+    rate:int
     itemMusicId: str
 
 @strawberry.input

@@ -25,6 +25,9 @@ class QueryComment:
     @strawberry.field
     def userComments(self,userId:str)->typing.List[Comment]:
         return generalRequest(f"{COMMENTS_URL_BASE}user/{userId}/comments",GET)
+    @strawberry.field
+    def average(self,id:str)->str:
+        return generalRequest(f"{COMMENTS_URL_BASE}av/{id}/",GET)
     
     
     
