@@ -60,3 +60,20 @@ class Albums:
 class Response:
     tracks: track
     albums: typing.List[Albums]
+
+@strawberry.type
+class ResponseId:
+    album_type: str
+    artists: str | None
+    external_urls: ExternalUrls | None
+    genres: typing.List[str] | None
+    href: str
+    id: str
+    images:typing.List[Images] | None
+    name: str
+    popularity: int
+    release_date: str
+    total_tracks: int
+    tracks:track
+    type: str
+    uri: str

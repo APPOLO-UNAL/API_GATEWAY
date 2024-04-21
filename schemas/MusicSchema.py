@@ -21,6 +21,14 @@ class QueryMusic:
     @strawberry.field
     def tracksByName(self,idTrack:str)-> typing.List[Response]:
         return generalRequest(MUSIC_URL_BASE+"music?name={0}".format(idTrack),GET)
+    
+    @strawberry.field
+    def tracksByIdTrack(self,id:str)-> ResponseId:
+        return generalRequest(MUSIC_URL_BASE+"id?album={0}".format(id),GET)
+    
+    @strawberry.field
+    def artistByIdArtist(self,id:str)->ResponseId:
+        return generalRequest(MUSIC_URL_BASE+"id?artist={0}".format(id),GET)
 
     @strawberry.field
     def tracksByAlbum(self,idAlbum:str)-> Response:
