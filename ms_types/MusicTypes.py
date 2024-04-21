@@ -18,7 +18,7 @@ class Album:
     total_tracks: int
     external_urls: ExternalUrls
     id: str
-    imagesFr: typing.List[Images] | None
+    images: typing.List[Images] | None
     name: str
     release_date: str
     release_date_precision: str
