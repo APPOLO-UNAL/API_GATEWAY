@@ -18,16 +18,16 @@ class QueryUserSocial:
     def userByUserName(self,userName:str)->User:
         return  generalRequest(f"{USERSOCIAL_URL_BASE}user/?userName={userName}",GET)
     @strawberry.field
-    def followers(self,id:str)->Followers:
+    def followers(self,id:str)->UserFollowers:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followers/?uid={id}",GET)
     @strawberry.field
-    def followersCount(self,id:str)->Followers:
+    def followersCount(self,id:str)->UserFollowers:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followsCount/?uid={id}",GET)
     @strawberry.field
-    def following(self,id:str)->Following:
+    def following(self,id:str)->UserFollowing:
         return generalRequest(f"{USERSOCIAL_URL_BASE}following/?uid={id}",GET)
     @strawberry.field
-    def followingCount(self,id:str)->Following:
+    def followingCount(self,id:str)->UserFollowing:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followingCount/?uid={id}",GET)
     
 

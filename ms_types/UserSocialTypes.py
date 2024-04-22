@@ -46,10 +46,12 @@ class UserUpdateInput:
 class FollowInput:
     uid1: str
     uid2: str
-@strawberry.input
-class Followers:
+
+@strawberry.type
+class UserFollowers:
     followers: str
-@strawberry.input
-class Following:
+
+@strawberry.type
+class UserFollowing:
     following: str
     
