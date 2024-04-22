@@ -21,13 +21,13 @@ class QueryUserSocial:
     def followers(self,id:str)->UserFollowers:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followers/?uid={id}",GET)
     @strawberry.field
-    def followersCount(self,id:str)->UserFollowers:
+    def followersCount(self,id:str)->FollowersCount:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followsCount/?uid={id}",GET)
     @strawberry.field
     def following(self,id:str)->UserFollowing:
         return generalRequest(f"{USERSOCIAL_URL_BASE}following/?uid={id}",GET)
     @strawberry.field
-    def followingCount(self,id:str)->UserFollowing:
+    def followingCount(self,id:str)->FollowingCount:
         return generalRequest(f"{USERSOCIAL_URL_BASE}followingCount/?uid={id}",GET)
     
 
