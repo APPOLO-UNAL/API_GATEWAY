@@ -10,6 +10,9 @@ class User:
     description: str
     picture : str
     favArtists: typing.Optional[typing.List[str]]
+    favAlbums: typing.Optional[typing.List[str]]
+    favSongs: typing.Optional[typing.List[str]]
+    favPlaylists: typing.Optional[typing.List[str]]
     pinnedComm: typing.Optional[typing.List[str]]
 @strawberry.type
 class UserDeleteResponse:
@@ -35,10 +38,18 @@ class UserUpdateInput:
     description: str
     picture: str
     favArtists: typing.Optional[typing.List[str]]=None
+    favAlbums: typing.Optional[typing.List[str]]=None
+    favSongs: typing.Optional[typing.List[str]]=None
+    favPlaylists: typing.Optional[typing.List[str]]=None
     pinnedComm: typing.Optional[typing.List[str]]=None
 @strawberry.input
 class FollowInput:
     uid1: str
     uid2: str
-
+@strawberry.input
+class Followers:
+    followers: str
+@strawberry.input
+class Following:
+    following: str
     
