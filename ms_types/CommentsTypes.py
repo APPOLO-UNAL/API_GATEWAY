@@ -7,11 +7,14 @@ class Comment:
     content: str
     parentId: typing.Optional[str]
     itemMusicId:str
-    rate:int
+    rate: typing.Optional[str]
+    itemMusicType: str
     likes: typing.List[str]
     dislikes: typing.List[str]
+    userName: str=None
     createdAt: str
     updatedAt: str
+
 
 @strawberry.input
 class CommentUpdate:
@@ -24,13 +27,16 @@ class CommentInput:
     content: str
     rate:int
     itemMusicId: str
+    itemMusicType: str
 
 @strawberry.input
 class ReplyInput:
     content: str
     userId: str
+    itemMusicType: str
     itemMusicId: typing.Optional[str]=None
     parentId: typing.Optional[str]=None
+    
 @strawberry.input
 class ReactInput:
     userIdLike: str
