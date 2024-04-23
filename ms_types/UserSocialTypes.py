@@ -49,9 +49,16 @@ class FollowInput:
 
 @strawberry.type
 class UserFollowers:
+    followers: typing.Optional[typing.List[str]]=None
+
+@strawberry.type
+class FollowersCount:
     followers: str
 
 @strawberry.type
 class UserFollowing:
+    following: typing.Optional[typing.List[str]]=None
+
+@strawberry.type
+class FollowingCount:
     following: str
-    
