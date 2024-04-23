@@ -10,15 +10,42 @@ from ms_types.CommentsTypes import *
 class QueryComment:
     
     @strawberry.field
-    def comment(self,id:str)-> Comment:
-        return generalRequest(f"{COMMENTS_URL_BASE}comments/{id}",GET)
+    def comment(self, id: str) -> Comment:
+        comment = generalRequest(f"{COMMENTS_URL_BASE}comments/{id}", GET)
+        userId = comment["userId"]
+        user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
+        comment["userName"] = user["userName"]
+        return comment
     @strawberry.field
-    def replies(self,parentId:str)->typing.List[Comment]:
-        return generalRequest(f"{COMMENTS_URL_BASE}comments/{parentId}/replies",GET)
-    
+    def replies(self, parentId: str) -> typing.List[Comment]:
+        replies = generalRequest(f"{COMMENTS_URL_BASE}comments/{parentId}/replies", GET)
+        print(f"{COMMENTS_URL_BASE}comments/{parentId}/replies")
+        print("xd")
+        for reply in replies:
+            userId = reply["userId"]
+            user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
+            reply["userName"] = user["userName"]
+        return replies
     @strawberry.field
-    def comments(self)->typing.List[Comment]:
-        return generalRequest(f"{COMMENTS_URL_BASE}comments/",GET)
+    def comments(self)->typing.List[Comment]: 
+        comments=generalRequest(f"{COMMENTS_URL_BASE}comments/",GET)
+        for comment in comments:
+            userId=comment["userId"]
+            user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
+            comment["userName"]=user["userName"]
+
+        return comments
+    @strawberry.field
+    def commentsByFollowed(self,userIdList:typing.List[str])->typing.List[Comment]: 
+        userIds = "&".join(f"userId={userId}" for userId in userIdList)
+        print(userIds)
+        comments = generalRequest(f"{COMMENTS_URL_BASE}comments/followed/?{userIds}", GET)
+        for comment in comments:
+            userId=comment["userId"]
+            user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
+            comment["userName"]=user["userName"]
+
+        return comments
     @strawberry.field
     def itemComments(self,itemMusicId:str)->typing.List[Comment]:
         return generalRequest(f"{COMMENTS_URL_BASE}item/{itemMusicId}/comments",GET)
