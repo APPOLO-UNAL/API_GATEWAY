@@ -14,6 +14,7 @@ class QueryComment:
         comment = generalRequest(f"{COMMENTS_URL_BASE}comments/{id}", GET)
         userId = comment["userId"]
         user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
+        comment["picture"]=user["picture"]
         comment["userName"] = user["userName"]
         return comment
     @strawberry.field
@@ -25,6 +26,7 @@ class QueryComment:
             userId = reply["userId"]
             user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
             reply["userName"] = user["userName"]
+            reply["picture"]=user["picture"]
         return replies
     @strawberry.field
     def comments(self)->typing.List[Comment]: 
@@ -33,6 +35,7 @@ class QueryComment:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
             comment["userName"]=user["userName"]
+            comment["picture"]=user["picture"]
 
         return comments
     @strawberry.field
@@ -44,6 +47,7 @@ class QueryComment:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
             comment["userName"]=user["userName"]
+            comment["picture"]=user["picture"]
 
         return comments
     @strawberry.field
@@ -56,7 +60,7 @@ class QueryComment:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
             comment["userName"]=user["userName"]
-
+            comment["picture"]=user["picture"]
         return comments
     @strawberry.field
     def average(self,id:str)->str:
