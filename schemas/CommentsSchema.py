@@ -14,8 +14,8 @@ class QueryComment:
         comment = generalRequest(f"{COMMENTS_URL_BASE}comments/{id}", GET)
         userId = comment["userId"]
         user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
-        comment["picture"]=user["picture"]
-        comment["userName"] = user["userName"]
+        comment["userName"] = user.get("userName", "unknow")
+        comment["picture"] = user.get("picture", "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg")
         return comment
     @strawberry.field
     def replies(self, parentId: str) -> typing.List[Comment]:
@@ -25,8 +25,8 @@ class QueryComment:
         for reply in replies:
             userId = reply["userId"]
             user = generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}", GET)
-            reply["userName"] = user["userName"]
-            reply["picture"]=user["picture"]
+            reply["userName"] = user.get("userName", "unknow")
+            reply["picture"] = user.get("picture", "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg")
         return replies
     @strawberry.field
     def comments(self)->typing.List[Comment]: 
@@ -34,8 +34,8 @@ class QueryComment:
         for comment in comments:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
-            comment["userName"]=user["userName"]
-            comment["picture"]=user["picture"]
+            comment["userName"] = user.get("userName", "unknow")
+            comment["picture"] = user.get("picture", "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg")
 
         return comments
     @strawberry.field
@@ -46,8 +46,8 @@ class QueryComment:
         for comment in comments:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
-            comment["userName"]=user["userName"]
-            comment["picture"]=user["picture"]
+            comment["userName"] = user.get("userName", "unknow")
+            comment["picture"] = user.get("picture", "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg")
 
         return comments
     @strawberry.field
@@ -59,8 +59,8 @@ class QueryComment:
         for comment in comments:
             userId=comment["userId"]
             user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
-            comment["userName"]=user["userName"]
-            comment["picture"]=user["picture"]
+            comment["userName"] = user.get("userName", "unknow")
+            comment["picture"] = user.get("picture", "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg")
         return comments
     @strawberry.field
     def average(self,id:str)->str:
