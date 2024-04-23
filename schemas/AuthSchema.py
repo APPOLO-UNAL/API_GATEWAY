@@ -1,53 +1,45 @@
 import strawberry
 from utilities import generalRequest
-from server import AUTH_URL_BASE
 from ms_types.AuthTypes import AuthToken, AuthError, UserAuth
 
 AUTH_MS_BASE_URL = "http://localhost:3000/api/v1"
 
+# Define the union for the login result which can either be AuthToken or AuthError
 LoginResult = strawberry.union("LoginResult", types=(AuthToken, AuthError))
 
 @strawberry.type
 class MutationsAuth:
     @strawberry.mutation
-    def login(self, email: str, password: str) -> LoginResult:
-        
+    def login(self, email: str, password: str) -> LoginResult: # type: ignore
         payload = {
             "user": {
                 "email": email,
                 "password": password
             }
         }
-        # Make sure to pass full_response=True to get the full response object
-        response = generalRequest(f"{AUTH_MS_BASE_URL}/sign_in", "POST", body=payload, full_response=True)
-        
-        if not response or response.status_code != 200:
-            return AuthError(message="Failed to authenticate")
+        response = generalRequest(f"{AUTH_MS_BASE_URL}/sign_in", "POST", body=payload)
 
-        # Extract the JWT token from the Authorization header
-        auth_header = response.headers.get('Authorization')
-        if not auth_header:
-            return AuthError(message="Authorization token not found in response")
+        if not response:
+            return AuthError(message="No response from the server or connection error.")
 
-        # Extract the token part if the header is in the format "Bearer <token>"
-        token = auth_header.split(" ")[1] if "Bearer" in auth_header else None
-
-        if not token:
-            return AuthError(message="JWT token could not be extracted from the Authorization header")
-
-        # Assuming the user information is still part of the response body
-        user_info = response.json().get('user', {})
-        if user_info:
-            return AuthToken(
-                token=token,  # Use the extracted token
-                user=UserAuth(
-                    id=str(user_info.get('id')),
-                    email=user_info.get('email'),
-                    created_at=user_info.get('created_at'),
-                    updated_at=user_info.get('updated_at'),
-                    nickname=user_info.get('nickname', ''),
-                    keyIdAuth=user_info.get('keyIdAuth', ''),
+        # Handling the response based on the assumed successful status code and structure
+        if response.get('status_code', 400) in [200, 201]:  # Checks for successful HTTP status codes
+            user_data = response.get('data', {}).get('user')
+            if user_data:
+                return AuthToken(
+                    token=user_data.get('token'),  # Assuming token is part of the user data in the response
+                    user=UserAuth(
+                        id=str(user_data.get('id')),
+                        email=user_data.get('email'),
+                        created_at=user_data.get('created_at'),
+                        updated_at=user_data.get('updated_at'),
+                        nickname=user_data.get('nickname', None),
+                        keyIdAuth=user_data.get('keyIdAuth', None)
+                    )
                 )
-            )
+            else:
+                return AuthError(message="User data not found in the response.")
         else:
-            return AuthError(message="User information not found in response")
+            # Error handling based on the API's error message or a default message
+            error_message = response.get('message', 'Failed to authenticate with the provided credentials.')
+            return AuthError(message=error_message)

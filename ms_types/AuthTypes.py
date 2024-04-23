@@ -3,12 +3,12 @@ from ms_types.UserSocialTypes import User, UserInput, UserDeleteInput, UserUpdat
 
 @strawberry.type
 class UserAuth:
-    id: strawberry.ID
+    id: str
     email: str
     created_at: str
     updated_at: str
-    nickname: str
-    keyIdAuth: str
+    nickname: str = None  
+    keyIdAuth: str = None  
 
 @strawberry.type
 class AuthToken:

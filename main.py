@@ -1,27 +1,40 @@
 from fastapi import FastAPI
 import strawberry
 from strawberry.asgi import GraphQL
-from strawberry.schema.config import StrawberryConfig
 from schemas.Schema import Query, Mutation
+from strawberry.schema.config import StrawberryConfig
 import operator
-from ms_types.AuthTypes import AuthError  # Import AuthError for type checking
+from ms_types.AuthTypes import AuthError 
+import logging
 
 app = FastAPI()
 
+@strawberry.type
+class AuthError:
+    message: str
+
+    @strawberry.field
+    def message(self) -> str:
+        return self.message
+
 def default_resolver(root, field):
-    # Check if root is an instance of AuthError and handle it specifically
+    logging.debug(f"Resolver called with root type: {type(root)}, field: {field}")
     if isinstance(root, AuthError):
         if field == "message":
             return root.message
         else:
-            # Handle other fields or raise an error if necessary
             raise AttributeError(f"AuthError does not have a field named {field}")
-    try:
-        return operator.getitem(root, field)
-    except KeyError:
-        return getattr(root, field)
+    else:  # Modified section
+        try:
+            return getattr(root, field)  # Use getattr here 
+        except AttributeError:
+            raise AttributeError(f"{type(root)} does not have a field named {field}") 
 
-config = StrawberryConfig(default_resolver=default_resolver)
+
+
+config = StrawberryConfig(
+    default_resolver=default_resolver,
+)
 
 schema = strawberry.Schema(query=Query, mutation=Mutation, config=config)
 
