@@ -62,9 +62,16 @@ class Response:
     albums: typing.List[Albums]
 
 @strawberry.type
+class IdArtist:
+    external_urls: ExternalUrls
+    href: str
+    id: str
+    name: str
+
+@strawberry.type
 class ResponseId:
     album_type: str
-    artists: str | None
+    artists: IdArtist
     external_urls: ExternalUrls | None
     genres: typing.List[str] | None
     href: str
