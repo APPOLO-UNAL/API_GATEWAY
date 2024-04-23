@@ -51,7 +51,13 @@ class QueryComment:
         return generalRequest(f"{COMMENTS_URL_BASE}item/{itemMusicId}/comments",GET)
     @strawberry.field
     def userComments(self,userId:str)->typing.List[Comment]:
-        return generalRequest(f"{COMMENTS_URL_BASE}user/{userId}/comments",GET)
+        comments= generalRequest(f"{COMMENTS_URL_BASE}user/{userId}/comments",GET)
+        for comment in comments:
+            userId=comment["userId"]
+            user=generalRequest(f"{USERSOCIAL_URL_BASE}user/?uid={str(userId)}",GET)
+            comment["userName"]=user["userName"]
+
+        return comments
     @strawberry.field
     def average(self,id:str)->str:
         return generalRequest(f"{COMMENTS_URL_BASE}av/{id}/",GET)
