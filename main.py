@@ -43,7 +43,7 @@ app.add_middleware(
 )
 @app.get("/")
 def index(): 
-    return {"mess":"a"}
+    return {"error":"Wrong url, go to /graphql"}
 app.add_route("/graphql",GraphQL(schema,debug=True))
 if __name__=="__main__":
     import uvicorn
