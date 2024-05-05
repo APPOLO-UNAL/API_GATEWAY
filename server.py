@@ -1,8 +1,13 @@
 # Split the URL into base and endpoint
-base_url = "localhost"
+base_url = "host.docker.internal"
 base_endpoint = "api/v1" 
 
 # Now you can use base_url, endpoint, and port in your code
+comments_container_name = "comments_ms"
+userSocial_container_name="usersocial_ms"
+music_container_name="music_ms"
+auth_container_name="auth_ms"
+
 comments_port = "8082"
 userSocial_port = "8000"
 rating_port = "8081"
