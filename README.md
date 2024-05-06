@@ -30,6 +30,48 @@ To set up the project using Docker Compose, follow these steps:
      docker-compose up -d
      ```
 
+4. To verify the correct functioning, access `localhost/graphql` and execute the following queries:
+
+- Query 1:
+     ```graphql
+     query {
+          tracksByName(idTrack: "Fantasias") {
+               tracks {
+                    items {
+                         album {
+                              images {
+                                   url
+                              }
+                              albumType
+                              name
+                              id
+                              totalTracks
+                              releaseDate
+                         }
+                         externalUrls {
+                              spotify
+                         }
+                         artists {
+                              name
+                              popularity
+                         }
+                    }
+               }
+          }
+     }
+     ```
+
+- Query 2:
+     ```graphql
+     query {
+          comments {
+               Id
+               userId
+               picture
+               userName
+          }
+     }
+     ```
 # Restarting Docker Compose
 
 To restart Docker Compose, follow these steps:
