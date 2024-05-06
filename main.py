@@ -3,11 +3,25 @@ import strawberry
 from strawberry.asgi import GraphQL
 from schemas.Schema import Query, Mutation
 from strawberry.schema.config import StrawberryConfig
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import operator
 from ms_types.AuthTypes import AuthError 
-import logging
+from starlette.requests import Request
 
+import logging
 app = FastAPI()
+
+class LogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        body = await request.body()
+        print(f"Request: {request.method} {request.url}")
+        print(f"Headers: {request.headers}")
+        print(f"Body: {body.decode()}")
+        response = await call_next(request)
+        return response
+
+
 
 @strawberry.type
 class AuthError:
@@ -39,6 +53,17 @@ config = StrawberryConfig(
 schema = strawberry.Schema(query=Query, mutation=Mutation, config=config)
 
 app.add_route("/graphql", GraphQL(schema, debug=True))
+
+
+app.add_middleware(LogMiddleware)
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def index():

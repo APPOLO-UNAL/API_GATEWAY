@@ -43,7 +43,7 @@ class MutationsAuth:
 
     @strawberry.mutation
     def signup(self, email: str, password: str, nickname: str) -> LoginResult: # type: ignore
-        payload = {
+        payload = { 
             "user": {
                 "email": email,
                 "password": password,
