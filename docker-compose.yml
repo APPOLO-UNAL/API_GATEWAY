@@ -46,6 +46,7 @@ services:
   #     - notifications_bd
 
   usersocial_ms:
+    image: usersocial_ms
     build:
       context: ../usersocial_ms/MS_userSocial
       dockerfile: ./Dockerfile  
@@ -55,6 +56,7 @@ services:
       - my_network
 
   comments_ms:
+    image: comments_ms
     build:
       context: ../comments_ms
       dockerfile: ./Dockerfile  
@@ -64,6 +66,7 @@ services:
       - my_network
 
   music_ms:
+    image: music_ms
     build: 
       context: ../music_ms
       dockerfile: ./Dockerfile
@@ -124,6 +127,7 @@ services:
   #API_GW
   
   proxy_apigateway:
+    image: proxy_apigateway
     container_name: proxy_ag
     build: 
       context: ../appolo_ag_rp
@@ -137,7 +141,7 @@ services:
     networks:
       - apigw_network
   apigateway:
-    
+    image: apigateway
     build:      
       context: ./
       dockerfile: Dockerfile
