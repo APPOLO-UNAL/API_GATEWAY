@@ -7,27 +7,37 @@ class Comment:
     content: str
     parentId: typing.Optional[str]
     itemMusicId:str
+    rate: typing.Optional[str]
+    itemMusicType: str
     likes: typing.List[str]
     dislikes: typing.List[str]
+    userName: str=None
     createdAt: str
     updatedAt: str
+    picture: str='https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg' ##Default photo user
+
 
 @strawberry.input
 class CommentUpdate:
     content: str
+    rate:int
 
 @strawberry.input
 class CommentInput:
     userId: str
     content: str
+    rate:int
     itemMusicId: str
+    itemMusicType: str
 
 @strawberry.input
 class ReplyInput:
     content: str
     userId: str
+    itemMusicType: str
     itemMusicId: typing.Optional[str]=None
     parentId: typing.Optional[str]=None
+    
 @strawberry.input
 class ReactInput:
     userIdLike: str

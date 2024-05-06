@@ -18,7 +18,7 @@ class Album:
     total_tracks: int
     external_urls: ExternalUrls
     id: str
-    imagesFr: typing.List[Images] | None
+    images: typing.List[Images] | None
     name: str
     release_date: str
     release_date_precision: str
@@ -60,3 +60,27 @@ class Albums:
 class Response:
     tracks: track
     albums: typing.List[Albums]
+
+@strawberry.type
+class IdArtist:
+    external_urls: ExternalUrls
+    href: str
+    id: str
+    name: str
+
+@strawberry.type
+class ResponseId:
+    album_type: str
+    artists: typing.List[IdArtist]
+    external_urls: ExternalUrls | None
+    genres: typing.List[str] | None
+    href: str
+    id: str
+    images:typing.List[Images] | None
+    name: str
+    popularity: int
+    release_date: str
+    total_tracks: int
+    tracks:track
+    type: str
+    uri: str
