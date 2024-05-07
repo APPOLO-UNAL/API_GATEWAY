@@ -42,7 +42,7 @@ def default_resolver(root, field):
             raise AttributeError(f"AuthError does not have a field named {field}")
     else:  # Modified section
         try:
-            return getattr(root, field)  # Use getattr here 
+            return operator.getitem(root, field)
         except AttributeError:
             raise AttributeError(f"{type(root)} does not have a field named {field}") 
 
