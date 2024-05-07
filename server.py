@@ -1,5 +1,5 @@
 # Split the URL into base and endpoint
-base_url = "host.docker.internal"
+base_url = "localhost"
 base_endpoint = "api/v1" 
 
 # Now you can use base_url, endpoint, and port in your code

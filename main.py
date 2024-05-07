@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 import strawberry
 from strawberry.asgi import GraphQL
+from schemas.Schema import Query, Mutation
 from strawberry.schema.config import StrawberryConfig
-from schemas.Schema import Query,Mutation
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -18,18 +20,51 @@ class LogMiddleware(BaseHTTPMiddleware):
 
 
 import operator
+from ms_types.AuthTypes import AuthError 
+from starlette.requests import Request
+
+import logging
+app = FastAPI()
+
+class LogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        body = await request.body()
+        print(f"Request: {request.method} {request.url}")
+        print(f"Headers: {request.headers}")
+        print(f"Body: {body.decode()}")
+        response = await call_next(request)
+        return response
+
+
+
+@strawberry.type
+class AuthError:
+    message: str
+
+    @strawberry.field
+    def message(self) -> str:
+        return self.message
 
 def default_resolver(root, field):
-    try:
-        return operator.getitem(root, field)
-    except KeyError:
-        return getattr(root, field)
+    logging.debug(f"Resolver called with root type: {type(root)}, field: {field}")
+    if isinstance(root, AuthError):
+        if field == "message":
+            return root.message
+        else:
+            raise AttributeError(f"AuthError does not have a field named {field}")
+    else:  # Modified section
+        try:
+            return operator.getitem(root, field)
+        except AttributeError:
+            raise AttributeError(f"{type(root)} does not have a field named {field}") 
+
+
 
 config = StrawberryConfig(
     default_resolver=default_resolver,
 )
 
-schema= strawberry.Schema(query=Query,mutation=Mutation,config=config)
+schema = strawberry.Schema(query=Query, mutation=Mutation, config=config)
 
 app=FastAPI()
 app.add_middleware(LogMiddleware)
@@ -45,6 +80,6 @@ app.add_middleware(
 def index(): 
     return {"error":"Wrong url, go to /graphql"}
 app.add_route("/graphql",GraphQL(schema,debug=True))
-if __name__=="__main__":
+if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)

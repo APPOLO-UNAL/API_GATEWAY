@@ -1,34 +1,76 @@
 import strawberry
-from typing import Union
 from utilities import generalRequest
-from server import AUTH_URL_BASE
-from ms_types.AuthTypes import AuthToken, AuthError, User
+from ms_types.AuthTypes import AuthToken, AuthError, UserAuth
 
 AUTH_MS_BASE_URL = "http://localhost:3000/api/v1"
+
+LoginResult = strawberry.union("LoginResult", types=(AuthToken, AuthError))
 
 @strawberry.type
 class MutationsAuth:
     @strawberry.mutation
-    def login(self, email: str, password: str) -> Union[AuthToken, AuthError]:
-        # This mutation attempts a login and expects user details in response if successful
-        payload = {"email": email, "password": password}
+    def login(self, email: str, password: str) -> LoginResult: # type: ignore
+        payload = {
+            "user": {
+                "email": email,
+                "password": password
+            }
+        }
         response = generalRequest(f"{AUTH_MS_BASE_URL}/sign_in", "POST", body=payload)
-        
-        if 'error' in response or not response.get('success'):
-            return AuthError(message=response.get('message', 'Unexpected error occurred'))
-        
-        user_info = response.get('user', {})
-        if user_info:
-            return AuthToken(
-                token="YourTokenHere",  # Placeholder for actual token handling if implemented as devise is used
-                user=User(
-                    id=user_info.get('id'),
-                    email=user_info.get('email'),
-                    created_at=user_info.get('created_at'),
-                    updated_at=user_info.get('updated_at'),
-                    nickname=user_info.get('nickname'),
-                    keyIdAuth=user_info.get('keyIdAuth'),
+
+        if not response:
+            return AuthError(message="No response from the server or connection error.")
+
+        if response.get('status_code', 400) in [200, 201]:  
+            user_data = response.get('data', {}).get('user')
+            if user_data:
+                return AuthToken(
+                    token=user_data.get('token'),  
+                    user=UserAuth(
+                        id=str(user_data.get('id')),
+                        email=user_data.get('email'),
+                        created_at=user_data.get('created_at'),
+                        updated_at=user_data.get('updated_at'),
+                        nickname=user_data.get('nickname', None),
+                        keyIdAuth=user_data.get('keyIdAuth', None)
+                    )
                 )
-            )
+            else:
+                return AuthError(message="User data not found in the response.")
         else:
-            return AuthError(message="User information not found in response")
+            error_message = response.get('message', 'Failed to authenticate with the provided credentials.')
+            return AuthError(message=error_message)
+
+    @strawberry.mutation
+    def signup(self, email: str, password: str, nickname: str) -> LoginResult: # type: ignore
+        payload = { 
+            "user": {
+                "email": email,
+                "password": password,
+                "nickname": nickname
+            }
+        }
+        response = generalRequest(f"{AUTH_MS_BASE_URL}/sign_up", "POST", body=payload)
+
+        if not response:
+            return AuthError(message="No response from the server or connection error.")
+
+        if response.get('status_code', 400) in [200, 201]:  
+            user_data = response.get('user')  
+            if user_data:
+                return AuthToken(
+                    token=None, 
+                    user=UserAuth(
+                        id=str(user_data.get('id')),
+                        email=user_data.get('email'),
+                        created_at=user_data.get('created_at'),
+                        updated_at=user_data.get('updated_at'),
+                        nickname=user_data.get('nickname', None),
+                        keyIdAuth=user_data.get('keyIdAuth', None)
+                    )
+                )
+            else:
+                return AuthError(message="User data not found in the response.")
+        else:
+            error_message = response.get('message', 'Failed to register. Please try again.')
+            return AuthError(message=error_message)
