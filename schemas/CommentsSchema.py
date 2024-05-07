@@ -64,7 +64,8 @@ class QueryComment:
         return comments
     @strawberry.field
     def average(self,id:str)->str:
-        return generalRequest(f"{COMMENTS_URL_BASE}av/{id}/",GET)
+        average = generalRequest(f"{COMMENTS_URL_BASE}av/{id}/",GET)
+        return average
     
 
     
