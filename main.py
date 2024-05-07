@@ -41,9 +41,11 @@ class LogMiddleware(BaseHTTPMiddleware):
 class AuthError:
     message: str
 
-    @strawberry.field
-    def message(self) -> str:
-        return self.message
+    def __getitem__(self, item):
+        try:
+            return getattr(self, item)
+        except AttributeError:
+            raise KeyError(f"{item} is not a valid attribute of {type(self).__name__}")
 
 def default_resolver(root, field):
     logging.debug(f"Resolver called with root type: {type(root)}, field: {field}")
