@@ -12,12 +12,10 @@ comments_port = "8082"
 userSocial_port = "8000"
 rating_port = "8081"
 auth_port = "3000"
-
 music_port="8080"
+
 COMMENTS_URL_BASE = "http://{0}:{1}/{2}/".format(base_url, comments_port, base_endpoint)
 USERSOCIAL_URL_BASE = "http://{0}:{1}/{2}/".format(base_url, userSocial_port, base_endpoint)
 RATING_URL_BASE = "http://{0}:{1}/{2}/".format(base_url, rating_port, base_endpoint)
 AUTH_URL_BASE = "http://{0}:{1}/{2}/".format(base_url, auth_port, base_endpoint) 
 MUSIC_URL_BASE="http://{0}:{1}/{2}/".format(base_url,music_port,base_endpoint)
-
-#types
