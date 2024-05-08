@@ -55,6 +55,8 @@ class LogMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(LogMiddleware)
+
+
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
