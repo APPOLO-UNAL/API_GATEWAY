@@ -1,8 +1,3 @@
-### Docker-compose file for complete Appolo project
-### Move it to the folder where there are all of the microservices folders
-### Remember pull all the repositories
-
-#Make npm run tsc in comments_ms in each pull
 version: '3'
 networks:
   my_network:
@@ -11,39 +6,10 @@ networks:
     driver: bridge
 volumes:
   esdata:
+  ldap_data:
+  ldap_config:
+  db_data:
 services:
-  # some-rabbit:
-  #   image: rabbitmq:3-management
-  #   hostname: my-rabbit
-  #   networks:
-  #     - my_network
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-    
-  # notifications_bd:
-  #   image: mysql:latest
-  #   environment:
-  #     MYSQL_USER: test_user
-  #     MYSQL_PASSWORD: test_pass
-  #     MYSQL_DATABASE: notifications
-  #     MYSQL_ROOT_PASSWORD: root_pass
-  #   ports:
-  #     - "3306:3306"
-  #   networks:
-  #     - my_network
-
-  #TODO: Verify why this ms dockerization doesn't work
-  # notifications_ms:
-  #   build:
-  #     context: ./notification_ms
-  #     dockerfile: ./Dockerfile  
-  #   ports:
-  #     - "8084:8084"
-  #   networks:
-  #     - my_network
-  #   depends_on:
-  #     - notifications_bd
 
   usersocial_ms:
     image: usersocial_ms
@@ -91,40 +57,6 @@ services:
       - "9200:9200"
     networks:
       - my_network
-
-  # db_auth:
-  #   image: postgres
-  #   volumes:
-  #     - ./auth_ms/tmp/db:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_DB: apollo_api_development
-  #     POSTGRES_USER: naimu
-  #     POSTGRES_PASSWORD: password
-  #   networks:
-  #     - my_network
-
-  # #TODO: Verify why this ms dockerization doesn't work
-  # auth_ms:
-  #   build: 
-  #     context: ./auth_ms
-  #     dockerfile: ./Dockerfile
-  #   command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -p 3000 -b '0.0.0.0'"
-  #   volumes:
-  #     - .:/rails
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     RAILS_ENV: development
-  #     SECRET_KEY_BASE: b5fd37d1625555cc045316c41551d68ad20b8c59107d45bd1fc3654aba6dd7eb186a2b20cba71236f659aa2afc0e77e54e36f46d0d3a2f36d8d0e187c063ac8d
-  #     DATABASE_HOST: db
-  #     DATABASE_USER: naimu
-  #     DATABASE_PASSWORD: password
-  #   depends_on:
-  #     - db_auth
-  #   networks:
-  #     - my_network
-
-  #API_GW
   
   proxy_apigateway:
     image: proxy_apigateway
@@ -140,6 +72,8 @@ services:
       - apigateway
     networks:
       - apigw_network
+      - my_network
+      
   apigateway:
     image: apigateway
     build:      
@@ -150,3 +84,74 @@ services:
     restart: always
     networks:
       - apigw_network
+      - my_network
+    depends_on:
+      - auth_ms
+  auth_ms:
+    build:
+      context: ../auth_ms
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      SECRET_KEY_BASE: b5fd37d1625555cc045316c41551d68ad20b8c59107d45bd1fc3654aba6dd7eb186a2b20cba71236f659aa2afc0e77e54e36f46d0d3a2f36d8d0e187c063ac8d
+      DATABASE_HOST: db
+      DATABASE_USER: naimu
+      DATABASE_PASSWORD: password
+    depends_on:
+      - db
+      - appolo-ldap
+    networks:
+      - apigw_network
+      - my_network
+  db:
+    image: postgres:latest
+    container_name: auth_ms_db
+    environment:
+      POSTGRES_DB: apollo_api_development
+      POSTGRES_USER: naimu
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - apigw_network
+      - my_network
+      
+  appolo-ldap:
+    image: osixia/openldap:1.1.8
+    container_name: appolo_ldap
+    environment:
+      LDAP_ORGANISATION: "Software Architecture"
+      LDAP_DOMAIN: "arqsoft.unal.edu.co"
+      LDAP_BASE_DN: "dc=arqsoft,dc=unal,dc=edu,dc=co"
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_LOG_LEVEL: "256"
+    ports:
+      - "389:389"
+      - "636:636"
+    expose:
+      - "389"
+    volumes:
+      - ldap_data:/var/lib/ldap
+      - ldap_config:/etc/ldap/slapd.d
+    networks:
+      - apigw_network
+      - my_network
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "appolo-ldap"
+      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_LDAP_DEBUG: "true"
+      PHPLDAPADMIN_LDAP_DEBUG_LEVEL: 7
+    ports:
+      - "8085:80"
+    depends_on:
+      - appolo-ldap  
+    

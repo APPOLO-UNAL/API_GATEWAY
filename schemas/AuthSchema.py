@@ -4,11 +4,13 @@ from ldap3 import Server, Connection, ALL, MODIFY_REPLACE
 from ms_types.AuthTypes import AuthToken, AuthError, UserAuth
 
 AUTH_MS_BASE_URL = "http://localhost:3000/api/v1"
-LDAP_SERVER = 'ldap://localhost:389'
+LDAP_SERVER = 'ldap://appolo-ldap:389'
+LDAP_PORT = 389
 LDAP_USER = 'cn=admin,dc=arqsoft,dc=unal,dc=edu,dc=co'
 LDAP_PASSWORD = 'admin'
 
-server = Server(LDAP_SERVER, get_info=ALL)
+
+server = Server(LDAP_SERVER, port=LDAP_PORT, get_info=ALL)
 
 LoginResult = strawberry.union("LoginResult", types=(AuthToken, AuthError))
 @strawberry.type
@@ -16,7 +18,7 @@ class MutationsAuth:
     @strawberry.mutation
     def signup(self, email: str, password: str, nickname: str) -> LoginResult: # type: ignore
         # Connect to LDAP
-        conn = Connection(server, LDAP_USER, LDAP_PASSWORD, auto_bind=True)
+        conn = Connection(server, user=LDAP_USER, password=LDAP_PASSWORD, auto_bind=True)
         
         # Define DN and attributes
         dn = f"cn={nickname},ou=users,dc=arqsoft,dc=unal,dc=edu,dc=co"
