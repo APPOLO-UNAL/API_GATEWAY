@@ -153,5 +153,8 @@ services:
     ports:
       - "8085:80"
     depends_on:
-      - appolo-ldap  
+      - appolo-ldap
+    networks:
+      - apigw_network
+      - my_network  
     
