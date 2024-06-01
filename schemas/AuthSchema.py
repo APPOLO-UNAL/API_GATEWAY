@@ -3,7 +3,7 @@ from utilities import generalRequest
 from ldap3 import Server, Connection, ALL, MODIFY_REPLACE
 from ms_types.AuthTypes import AuthToken, AuthError, UserAuth
 
-AUTH_MS_BASE_URL = "http://localhost:3000/api/v1"
+AUTH_MS_BASE_URL = "http://auth_ms:3000/api/v1"
 LDAP_SERVER = 'ldap://appolo-ldap:389'
 LDAP_PORT = 389
 LDAP_USER = 'cn=admin,dc=arqsoft,dc=unal,dc=edu,dc=co'
@@ -44,22 +44,26 @@ class MutationsAuth:
         }
         response = generalRequest(f"{AUTH_MS_BASE_URL}/sign_up", "POST", body=payload)
 
-        if response and response.get('status_code', 400) in [200, 201]:  
-            user_data = response.get('user')  
-            if user_data:
-                return AuthToken(
-                    token=None, 
-                    user=UserAuth(
-                        id=str(user_data.get('id')),
-                        email=user_data.get('email'),
-                        created_at=user_data.get('created_at'),
-                        updated_at=user_data.get('updated_at'),
-                        nickname=user_data.get('nickname', None),
-                        keyIdAuth=user_data.get('keyIdAuth', None)
+        if response and "error" not in response:
+            if response.get('status_code', 400) in [200, 201]:
+                user_data = response.get('user')
+                if user_data:
+                    return AuthToken(
+                        token=None,
+                        user=UserAuth(
+                            id=str(user_data.get('id')),
+                            email=user_data.get('email'),
+                            created_at=user_data.get('created_at'),
+                            updated_at=user_data.get('updated_at'),
+                            nickname=user_data.get('nickname', None),
+                            keyIdAuth=user_data.get('keyIdAuth', None)
+                        )
                     )
-                )
+                else:
+                    return AuthError(message="User data not found in the response.")
             else:
-                return AuthError(message="User data not found in the response.")
+                error_message = response.get('message', 'Failed to register. Please try again.')
+                return AuthError(message=error_message)
         else:
-            error_message = response.get('message', 'Failed to register. Please try again.')
+            error_message = response.get('error', 'Failed to communicate with the authentication service.')
             return AuthError(message=error_message)

@@ -40,9 +40,10 @@ def generalRequest(url, method, body=None, full_response=False):
             return response
         else:
             return response.json()
+        
     except requests.exceptions.RequestException as err:
         logging.error(f"HTTP Request to {url} failed: {err}")
-        return None
+        return {"error": str(err)}
 
 def serialize_to_dict(json_object):
     return json.loads(json_object)
