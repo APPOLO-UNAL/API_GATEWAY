@@ -87,6 +87,7 @@ services:
       - my_network
     depends_on:
       - auth_ms
+      
   auth_ms:
     build:
       context: ../auth_ms
